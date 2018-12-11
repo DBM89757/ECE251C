@@ -1,4 +1,4 @@
-function x_hat = denoi_BLS_GSM_band(y,block,noise,prnt,covariance,optim,sig);
+function x_hat = denoi_BLS_GSM_band(y,block,noise,prnt,covariance,optim,sig)
 
 % It solves for the BLS global optimum solution, using a flat (pseudo)prior for log(z)
 % 		  x_hat = denoi_BLS_GSM_band(y,block,noise,prnt,covariance,optim,sig);
@@ -11,15 +11,15 @@ function x_hat = denoi_BLS_GSM_band(y,block,noise,prnt,covariance,optim,sig);
 % Last revision: JPM, 4/03
 
 
-if ~exist('covariance'),
+if ~exist('covariance')
         covariance = 1;
 end
 
-if ~exist('optim'),
-        optim = 1;
+if ~exist('optim')
+        optim = 0;
 end
 
-[nv,nh,nb] = size(y);
+[nv,nh,~] = size(y);
 
 nblv = nv-block(1)+1;	% Discard the outer coefficients 
 nblh = nh-block(2)+1;   % for the reference (centrral) coefficients (to avoid boundary effects)
@@ -58,7 +58,7 @@ if prnt,	% parent
 	W(:,n) = vector(foo);
 end
 
-C_w = innerProd(W)/nexp;
+C_w = diag(dot(W,W)/nexp);
 sig2 = mean(diag(C_w(1:N-prnt,1:N-prnt)));	% noise variance in the (fine) subband
 
 clear W;
@@ -104,7 +104,7 @@ S = S*real(sqrt(dd));	% S*S' = C_w
 iS = pinv(S);
 clear noise
 
-C_y = innerProd(Y)/nexp;
+C_y = diag(dot(Y,Y)/nexp);
 sy2 = mean(diag(C_y(1:N-prnt,1:N-prnt))); % observed (signal + noise) variance in the subband
 C_x = C_y - C_w;			% as signal and noise are assumed to be independent
 [Q,L] = eig(C_x);
